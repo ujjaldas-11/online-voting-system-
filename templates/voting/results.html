@@ -13,12 +13,14 @@
     {% if leading_party.symbol %}
             <img src="{{ leading_party.symbol.url }}" 
                  alt="{{ leading_party.name }}" 
-                 class="party-symbol">
+                 class="party-symbol"
+                 style="border-radius: 10px;"
+                 >
     {% endif %}
 </div>
   <div>
     <div class="leading-label-bn"> Currently Leading</div>
-    <div class="leading-name">{{ leading_party.bengali_name }} — {{ leading_party.name }}</div>
+    <div class="leading-name">{{ leading_party.description }} — {{ leading_party.name }}</div>
     <div class="leading-votes">{{ leading_party.vote_count }} votes</div>
   </div>
   <div style="margin-left:auto; font-size:2.5rem;">🏆</div>
