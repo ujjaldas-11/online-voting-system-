@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cast Your Vote — WB E-Voting 2026{% endblock %}
+
+{% block extra_css %}
+<style>
+.vote-layout {
+    max-width: 700px; 
+    margin: 0 auto;
+    padding: 1.5rem;
+}
+
+.vote-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.vote-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+
+.vote-header p {
+    color: #64748b;
+    font-size: 1.05rem;
+}
+
+.vote-notice {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    color: #9a5800;
+}
+
+.party-options {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+}
+
+.party-option-label {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.party-option-label:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1);
+}
+
+.party-option-label input[type="radio"] {
+    accent-color: #1e40af;
+    width: 22px;
+    height: 22px;
+}
+
+.party-symbol {
+    width: 58px;
+    height: 58px;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+}
+
+.party-option-info {
+    flex: 1;
+}
+
+.party-option-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #0f172a;
+}
+
+.party-option-bengali {
+    font-size: 0.95rem;
+    color: #475569;
+    margin-top: 4px;
+}
+
+.vote-submit {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.btn-vote {
+    background: #1e40af;
+    color: white;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-vote:hover {
+    background: #1e3a8a;
+    transform: translateY(-2px);
+}
+
+.btn-vote:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="vote-layout">
+
+  {% if has_voted %}
+    <!-- Already Voted Message -->
+    <div style="text-align:center; padding: 4rem 2rem; background:white; border-radius:16px; border:2px solid #86efac;">
+      <h2 style="color:#166534; margin-bottom:1rem;">✅ You have already voted</h2>
+      <p style="font-size:1.1rem; color:#475569;">
+        Your vote for <strong>{{ voted_party.name }}</strong> has been recorded successfully.
+      </p>
+      <div style="margin: 2rem 0;">
+        <img src="{{ voted_party.symbol.url }}" alt="{{ voted_party.name }}" width="90" style="border-radius:12px;">
+      </div>
+      <a href="{% url 'results' %}" class="btn btn-primary">View Live Results →</a>
+    </div>
+
+  {% else %}
+
+    <div class="vote-header">
+      <h1>Cast Your Vote</h1>
+      <p>Select only one party for the West Bengal Assembly Election 2026</p>
+    </div>
+
+    <div class="vote-notice">
+      <span>⚠️</span>
+      <span>Your vote is secret and final. You can vote only once.</span>
+    </div>
+
+    <form method="POST" action="{% url 'vote' %}">
+      {% csrf_token %}
+
+      <div class="party-options">
+        {% for party in parties %}
+        <label class="party-option-label">
+          <input type="radio" name="party_id" value="{{ party.id }}" required>
+          
+          {% if party.symbol %}
+            <img src="{{ party.symbol.url }}" 
+                 alt="{{ party.name }}" 
+                 class="party-symbol">
+          {% endif %}
+
+          <div class="party-option-info">
+            <div class="party-option-name">{{ party.name }}</div>
+            <div class="party-option-bengali">{{ party.bengali_name }}</div>
+          </div>
+
+          <div style="width:8px; height:50px; background:{{ party.color }}; border-radius:4px; flex-shrink:0;"></div>
+        </label>
+        {% endfor %}
+      </div>
+
+      <div class="vote-submit">
+        <button type="submit" class="btn-vote">
+          Submit My Vote
+        </button>
+      </div>
+    </form>
+
+  {% endif %}
+
+</div>
+{% endblock %}

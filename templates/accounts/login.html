@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% block title %}Login — WB E-Voting 2026{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── PAGE LAYOUT ── */
+  .auth-page {
+    min-height: calc(100vh - 62px - 56px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .auth-shell {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 920px;
+    width: 100%;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    min-height: 540px;
+  }
+
+  /* ── LEFT PANEL ── */
+  .auth-panel-left {
+    background: var(--navy);
+    padding: 3rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-panel-left::before {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,184,169,0.20) 0%, transparent 70%);
+    top: -80px; right: -80px;
+    pointer-events: none;
+  }
+  .auth-panel-left::after {
+    content: '';
+    position: absolute;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,166,35,0.15) 0%, transparent 70%);
+    bottom: -40px; left: -40px;
+    pointer-events: none;
+  }
+
+  .auth-left-top { z-index: 1; }
+  .auth-left-logo {
+    width: 44px; height: 44px;
+    background: var(--accent);
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem;
+    margin-bottom: 2rem;
+  }
+  .auth-left-eyebrow {
+    font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 0.6rem;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .auth-left-eyebrow::before {
+    content: ''; width: 16px; height: 2px;
+    background: var(--teal); border-radius: 2px; display: inline-block;
+  }
+  .auth-left-title {
+    font-family: var(--font-display);
+    font-size: 2rem; font-weight: 600;
+    color: #fff; line-height: 1.15; margin-bottom: 1rem;
+  }
+  .auth-left-title em { font-style: italic; color: var(--accent); }
+  .auth-left-desc {
+    font-size: 0.83rem; color: #7fa8cc; line-height: 1.7;
+  }
+
+  .auth-left-bottom { z-index: 1; }
+  .auth-trust-items {
+    display: flex; flex-direction: column; gap: 0.65rem; margin-top: 2rem;
+  }
+  .auth-trust-item {
+    display: flex; align-items: center; gap: 0.65rem;
+    font-size: 0.78rem; color: #7fa8cc;
+  }
+  .auth-trust-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--teal); flex-shrink: 0;
+  }
+
+  /* ── RIGHT PANEL ── */
+  .auth-panel-right {
+    background: var(--surface);
+    padding: 3rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .auth-form-header { margin-bottom: 2rem; }
+  .auth-form-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem; font-weight: 600;
+    color: var(--navy); margin-bottom: 0.35rem;
+  }
+  .auth-form-sub { font-size: 0.83rem; color: var(--text-2); }
+
+  /* ── FORM ── */
+  .auth-form { display: flex; flex-direction: column; gap: 1.1rem; }
+
+  .auth-field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .auth-label {
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-2); letter-spacing: 0.04em;
+  }
+  .auth-input-wrap { position: relative; }
+  .auth-input-icon {
+    position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%);
+    font-size: 0.95rem; pointer-events: none;
+    color: var(--text-3);
+  }
+  .auth-input {
+    width: 100%;
+    padding: 0.72rem 1rem 0.72rem 2.6rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+    font-family: var(--font-body);
+    color: var(--text-1);
+    background: var(--surface-2);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+  }
+  .auth-input:focus {
+    border-color: var(--navy-light);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px rgba(30,64,112,0.10);
+  }
+  .auth-input::placeholder { color: var(--text-3); }
+
+  /* show/hide password toggle */
+  .auth-toggle-pw {
+    position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    font-size: 0.85rem; color: var(--text-3);
+    padding: 0; line-height: 1;
+    transition: color 0.2s;
+  }
+  .auth-toggle-pw:hover { color: var(--text-2); }
+
+  /* ── SUBMIT ── */
+  .auth-submit {
+    margin-top: 0.5rem;
+    width: 100%; padding: 0.8rem;
+    background: var(--navy); color: #fff;
+    border: none; border-radius: var(--radius-md);
+    font-size: 0.9rem; font-weight: 600;
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 2px 12px rgba(11,31,58,0.22);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .auth-submit:hover {
+    background: var(--navy-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px rgba(11,31,58,0.28);
+  }
+  .auth-submit:active { transform: scale(0.98); }
+
+  /* ── DIVIDER ── */
+  .auth-or {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin: 0.5rem 0;
+    font-size: 0.75rem; color: var(--text-3); font-weight: 500;
+  }
+  .auth-or::before, .auth-or::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ── FOOTER LINK ── */
+  .auth-foot {
+    text-align: center; margin-top: 1.25rem;
+    font-size: 0.8rem; color: var(--text-2);
+  }
+  .auth-foot a {
+    color: var(--navy); font-weight: 600;
+    text-decoration: underline; text-underline-offset: 3px;
+    transition: color 0.15s;
+  }
+  .auth-foot a:hover { color: var(--teal); }
+
+  /* ── MESSAGES ── */
+  .auth-messages { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+  .auth-msg {
+    padding: 0.65rem 0.9rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem; font-weight: 500;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .auth-msg-error   { background: var(--red-dim);   color: #7a0f1a; border: 1px solid #e8445a28; }
+  .auth-msg-success { background: var(--green-dim); color: #0f4d2d; border: 1px solid #27ae7528; }
+  .auth-msg-info    { background: #e8f4ff; color: #0a3d6b; border: 1px solid #90c4f028; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .auth-shell { grid-template-columns: 1fr; min-height: auto; }
+    .auth-panel-left { padding: 2rem 1.5rem; min-height: auto; }
+    .auth-left-title { font-size: 1.5rem; }
+    .auth-trust-items { display: none; }
+    .auth-panel-right { padding: 2rem 1.5rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-shell">
+
+    <!-- ── LEFT PANEL ── -->
+    <div class="auth-panel-left">
+      <div class="auth-left-top">
+        <div class="auth-left-logo">🗳️</div>
+        <div class="auth-left-eyebrow">West Bengal Assembly</div>
+        <div class="auth-left-title">Welcome<br>back to <em>2026</em></div>
+        <div class="auth-left-desc">
+          Sign in to access the secure online voting portal for the West Bengal Legislative Assembly Election 2026.
+        </div>
+      </div>
+      <div class="auth-left-bottom">
+        <div class="auth-trust-items">
+          <div class="auth-trust-item"><span class="auth-trust-dot"></span>End-to-end encrypted votes</div>
+          <div class="auth-trust-item"><span class="auth-trust-dot"></span>One vote per registered voter</div>
+          <div class="auth-trust-item"><span class="auth-trust-dot"></span>Results verified in real time</div>
+          <div class="auth-trust-item"><span class="auth-trust-dot"></span>Managed by WB Election Commission</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT PANEL ── -->
+    <div class="auth-panel-right">
+      <div class="auth-form-header">
+        <div class="auth-form-title">Sign In</div>
+        <div class="auth-form-sub">Enter your credentials to continue</div>
+      </div>
+
+      <!-- Flash messages -->
+      {% if messages %}
+        <div class="auth-messages">
+          {% for message in messages %}
+            <div class="auth-msg auth-msg-{{ message.tags }}">
+              {% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✅{% else %}ℹ️{% endif %}
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'login' %}{% if request.GET.next %}?next={{ request.GET.next }}{% endif %}" class="auth-form" autocomplete="off">
+        {% csrf_token %}
+
+        <div class="auth-field">
+          <label class="auth-label" for="username">Username</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">👤</span>
+            <input
+              class="auth-input" type="text" id="username" name="username"
+              placeholder="Enter your username" required autocomplete="username"
+              value="{{ request.POST.username|default:'' }}"
+            />
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="password">Password</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">🔒</span>
+            <input
+              class="auth-input" type="password" id="password" name="password"
+              placeholder="Enter your password" required autocomplete="current-password"
+              style="padding-right: 2.8rem;"
+            />
+            <button type="button" class="auth-toggle-pw" onclick="togglePw('password', this)" title="Show/hide password">👁️</button>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-submit">
+          Sign In →
+        </button>
+      </form>
+
+      <div class="auth-or">or</div>
+
+      <div class="auth-foot">
+        Don't have an account? <a href="{% url 'register' %}">Register here</a>
+      </div>
+      <div class="auth-foot" style="margin-top: 0.5rem;">
+        <a href="{% url 'results' %}" style="color: var(--text-3); font-weight: 400; text-decoration: none;">
+          📊 View live results without logging in
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function togglePw(fieldId, btn) {
+    const input = document.getElementById(fieldId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.textContent = '🙈';
+    } else {
+      input.type = 'password';
+      btn.textContent = '👁️';
+    }
+  }
+</script>
+{% endblock %}

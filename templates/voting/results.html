@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+{% block title %} Results — WB E-Voting
+{% endblock %}
+{% block content %}
+
+<div class="results-header">
+  <div class="results-title-en">Live Election Results — West Bengal 2026</div>
+</div>
+
+{% if leading_party %}
+<div class="leading-banner">
+  <div class="leading-icon">
+    {% if leading_party.symbol %}
+            <img src="{{ leading_party.symbol.url }}" 
+                 alt="{{ leading_party.name }}" 
+                 class="party-symbol">
+    {% endif %}
+</div>
+  <div>
+    <div class="leading-label-bn"> Currently Leading</div>
+    <div class="leading-name">{{ leading_party.bengali_name }} — {{ leading_party.name }}</div>
+    <div class="leading-votes">{{ leading_party.vote_count }} votes</div>
+  </div>
+  <div style="margin-left:auto; font-size:2.5rem;">🏆</div>
+</div>
+{% endif %}
+
+<div class="charts-grid">
+  <div class="chart-card">
+    <div class="chart-title">Bar Chart</div>
+    <canvas id="barChart" height="200"></canvas>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title"> Pie Chart</div>
+    <canvas id="pieChart" height="200"></canvas>
+  </div>
+</div>
+
+<div class="card">
+  <h3 style="color:var(--deep-blue); margin-bottom:1rem;">
+    📋 Detailed Results
+  </h3>
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th></th>
+        <th>Party</th>
+        <th> Votes</th>
+        <th>%</th>
+        <th> Bar</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in results_data %}
+      <tr>
+        <td class="rank">{{ forloop.counter }}</td>
+        <td>
+          {% if item.party.symbol %}
+            <img src="{{ item.party.symbol.url }}" alt="{{ item.party.name }}" width="40" height="40" class="party-symbol">
+          {% endif %}
+        </td>
+        <td>
+          <span class="bn" style="font-weight:700;">{{ item.party.bengali_name }}</span><br>
+          <small style="color:#888;">{{ item.party.name }}</small>
+        </td>
+        <td><strong>{{ item.count }}</strong></td>
+        <td><strong>{{ item.percentage }}%</strong></td>
+        <td style="min-width:120px;">
+          <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width:{{ item.percentage }}%; background:{{ item.party.color }};"></div>
+          </div>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="text-align:center; color:#999; padding:2rem;">
+        No votes cast yet.
+      </td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div style="margin-top:1rem; padding-top:1rem; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center;">
+    <span style="font-weight:700; color:var(--deep-blue);">
+       Total Votes: <strong>{{ total_votes }}</strong>
+    </span>
+    <a href="{% url 'vote' %}" class="btn btn-primary" style="padding:10px 20px; font-size:0.9rem;">
+      🗳️ <span class="bn">ভোট দিন</span> / Vote
+    </a>
+  </div>
+</div>
+
+<div class="refresh-info">
+  🔄 Refresh page for latest results
+  <button onclick="location.reload()" style="margin-left:8px; background:var(--deep-blue); color:white; border:none; padding:4px 12px; border-radius:6px; cursor:pointer; font-size:0.85rem;">Refresh</button>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const chartData = {
+    labels: [{% for item in results_data %}"{{ item.party.name }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+    votes:  [{% for item in results_data %}{{ item.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+    colors: [{% for item in results_data %}"{{ item.party.color }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+  };
+
+  // Bar Chart
+  new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+      labels: chartData.labels,
+      datasets: [{
+        label: 'Votes',
+        data: chartData.votes,
+        backgroundColor: chartData.colors,
+        borderRadius: 8,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 } },
+        x: { ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // Pie / Doughnut Chart
+  new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {
+      labels: chartData.labels,
+      datasets: [{
+        data: chartData.votes,
+        backgroundColor: chartData.colors,
+        borderWidth: 3,
+        borderColor: '#fff',
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } }
+      }
+    }
+  });
+</script>
+{% endblock %}

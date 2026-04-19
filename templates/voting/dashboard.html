@@ -1,0 +1,229 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — WB E-Voting 2026{% endblock %}
+{% block nav_dashboard %}active{% endblock %}
+
+{% block extra_css %}
+<style>
+  .party-symbol{
+    border-radius: 10px;
+  }
+  .dash-hero {
+    background: var(--navy);
+    border-radius: var(--radius-xl);
+    padding: 3rem 2.5rem;
+    margin-bottom: 1.75rem;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 180px;
+  }
+  .dash-hero-orb-1 {
+    position: absolute; width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,184,169,0.18) 0%, transparent 70%);
+    top: -80px; right: -60px; pointer-events: none;
+  }
+  .dash-hero-orb-2 {
+    position: absolute; width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,166,35,0.12) 0%, transparent 70%);
+    bottom: -40px; left: 40%; pointer-events: none;
+  }
+  .dash-hero-left { z-index: 1; }
+  .dash-hero-eyebrow {
+    font-size: 1rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 0.6rem;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .dash-hero-eyebrow::before {
+    content: ''; display: inline-block;
+    width: 18px; height: 2px; background: var(--teal); border-radius: 2px;
+  }
+  .dash-hero-title {
+    font-family: var(--font-display); font-size: 2.5rem;
+    font-weight: 600; color: #fff; line-height: 1.1; margin-bottom: 0.5rem;
+  }
+  .dash-hero-title em { font-style: italic; color: var(--accent); }
+  .dash-hero-sub { font-size: 1rem; color: #7fa8cc; max-width: 380px; }
+  .dash-hero-right { z-index: 1; }
+  .dash-hero-live {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem; text-align: center; min-width: 130px;
+  }
+  .dash-hero-live-label {
+    font-size: 1rem; color: var(--teal); font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
+  }
+  .dash-hero-live-dot {
+    width: 8px; height: 8px; background: var(--teal); border-radius: 50%;
+    display: inline-block; animation: pulse 2s infinite; margin-right: 5px;
+  }
+  .dash-hero-live-num {
+    font-family: var(--font-display); font-size: 1.8rem;
+    font-weight: 600; color: #fff; line-height: 1;
+  }
+  .dash-hero-live-sub { font-size: 1rem; color: #7fa8cc; margin-top: 3px; }
+
+  .stats-row {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1rem; margin-bottom: 1.75rem;
+  }
+  .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .stat-card .stat-number { color: var(--navy); }
+  .stat-card.c-teal   .stat-number { color: var(--teal); }
+  .stat-card.c-accent .stat-number { color: #c47a00; }
+
+  .cta-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-xl); padding: 2rem; margin-bottom: 1.75rem;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1.5rem; box-shadow: var(--shadow-sm); flex-wrap: wrap;
+  }
+  .cta-icon-wrap {
+    width: 52px; height: 52px; border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; flex-shrink: 0;
+  }
+  .cta-body { display: flex; align-items: center; gap: 1rem; flex: 1; min-width: 200px; }
+  .cta-title { font-size: 1.05rem; font-weight: 600; color: var(--text-1); margin-bottom: 3px; }
+  .cta-sub { font-size: 0.83rem; color: var(--text-2); }
+  .cta-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+
+  .parties-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 0.85rem;
+  }
+  .party-tile {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.25rem 1rem;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 8px; text-align: center;
+    transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  }
+  .party-tile:hover { border-color: var(--border-mid); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+  .party-tile-symbol {
+    width: 50px; height: 50px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+  }
+  .party-tile-abbr { font-size: 1rem; font-weight: 700; color: var(--text-1); }
+  .party-tile-name { font-size: 1rem; color: var(--text-3); line-height: 1.3; }
+  .party-tile-bar { width: 28px; height: 3px; border-radius: 3px; margin-top: 4px; }
+
+  @media (max-width: 640px) {
+    .dash-hero { flex-direction: column; align-items: flex-start; min-height: auto; padding: 2rem 1.5rem; }
+    .dash-hero-title { font-size: 1.8rem; }
+    .stats-row { gap: 0.6rem; }
+    .stat-card { padding: 1rem 0.6rem; }
+    .stat-number { font-size: 1.4rem; }
+    .cta-card { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="dash-hero">
+  <div class="dash-hero-orb-1"></div>
+  <div class="dash-hero-orb-2"></div>
+  <div class="dash-hero-left">
+    <div class="dash-hero-eyebrow">West Bengal Legislative Assembly</div>
+    <div class="dash-hero-title">Election <em>2026</em></div>
+    <div class="dash-hero-sub">Secure, transparent, and accessible online voting for every eligible citizen of West Bengal.</div>
+  </div>
+  <div class="dash-hero-right">
+    <div class="dash-hero-live">
+      <div class="dash-hero-live-label"><span class="dash-hero-live-dot"></span>Live</div>
+      <div class="dash-hero-live-num">{{ total_votes }}</div>
+      <div class="dash-hero-live-sub">Votes cast</div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-number">{{ total_votes }}</div>
+    <div class="stat-label">Total Votes</div>
+  </div>
+  <div class="stat-card c-teal">
+    <div class="stat-number">{{ parties.count }}</div>
+    <div class="stat-label">Parties</div>
+  </div>
+  <div class="stat-card c-accent">
+    <div class="stat-number">{% if user.is_authenticated %}✓{% else %}—{% endif %}</div>
+    <div class="stat-label">Login Status</div>
+  </div>
+</div>
+
+{% if user.is_authenticated %}
+  {% if has_voted %}
+    <div class="alert alert-green" style="margin-bottom:1.75rem; padding:1.25rem 1.5rem; border-radius:var(--radius-xl);">
+      <div class="alert-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M3.5 9.5L7 13L14.5 5" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div style="flex:1;">
+        <div class="alert-title">Vote successfully recorded</div>
+        <div class="alert-sub">You voted for {{ voted_party.name }} — thank you for participating!</div>
+      </div>
+      <a href="{% url 'results' %}" class="btn btn-teal btn-sm">📊 View Results</a>
+    </div>
+  {% else %}
+    <div class="cta-card" style="border-left:4px solid var(--accent);">
+      <div class="cta-body">
+        <div class="cta-icon-wrap" style="background:var(--accent-dim);">🗳️</div>
+        <div>
+          <div class="cta-title">You haven't voted yet</div>
+          <div class="cta-sub">The election is live. Cast your vote securely right now.</div>
+        </div>
+      </div>
+      <div class="cta-actions">
+        <a href="{% url 'vote' %}" class="btn btn-accent btn-lg">Vote Now →</a>
+        <a href="{% url 'results' %}" class="btn btn-ghost">📊 Results</a>
+      </div>
+    </div>
+  {% endif %}
+{% else %}
+  <div class="cta-card" style="border-left:4px solid var(--teal);">
+    <div class="cta-body">
+      <div class="cta-icon-wrap" style="background:var(--teal-dim);">🔐</div>
+      <div>
+        <div class="cta-title">Login to cast your vote</div>
+        <div class="cta-sub">Register or sign in to participate in the 2026 West Bengal Legislative Assembly Election.</div>
+      </div>
+    </div>
+    <div class="cta-actions">
+      <a href="{% url 'register' %}" class="btn btn-accent">📝 Register</a>
+      <a href="{% url 'login' %}"    class="btn btn-outline">🔑 Login</a>
+      <a href="{% url 'results' %}"  class="btn btn-ghost">📊 Results</a>
+    </div>
+  </div>
+{% endif %}
+
+<div class="divider"></div>
+<div class="section-label">🏛 Parties on the Ballot</div>
+<div class="parties-grid">
+  {% for party in parties %}
+  <div class="party-tile">
+    {% if party.symbol %}
+            <img src="{{ party.symbol.url }}" 
+                 alt="{{ party.name }}"   
+                 width="80" height="80" 
+                 class="party-symbol">
+    {% endif %}
+    <div class="party-tile-abbr">{{ party.name }}</div>
+    <div class="party-tile-name">{{ party.bengali_name }}</div>
+    <div class="party-tile-bar" style="background:{{ party.color }};"></div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

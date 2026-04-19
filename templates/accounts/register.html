@@ -1,0 +1,423 @@
+{% extends 'base.html' %}
+{% block title %}Register — WB E-Voting 2026{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── PAGE LAYOUT ── */
+  .auth-page {
+    min-height: calc(100vh - 62px - 56px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+
+  .auth-shell {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 920px;
+    width: 100%;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    min-height: 580px;
+  }
+
+  /* ── LEFT PANEL ── */
+  .auth-panel-left {
+    background: var(--navy);
+    padding: 3rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+  .auth-panel-left::before {
+    content: '';
+    position: absolute;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(245,166,35,0.18) 0%, transparent 70%);
+    top: -80px; right: -80px; pointer-events: none;
+  }
+  .auth-panel-left::after {
+    content: '';
+    position: absolute;
+    width: 220px; height: 220px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(0,184,169,0.14) 0%, transparent 70%);
+    bottom: -50px; left: -30px; pointer-events: none;
+  }
+
+  .auth-left-top { z-index: 1; }
+  .auth-left-logo {
+    width: 44px; height: 44px; background: var(--accent);
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 2rem;
+  }
+  .auth-left-eyebrow {
+    font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 0.6rem;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .auth-left-eyebrow::before {
+    content: ''; width: 16px; height: 2px;
+    background: var(--teal); border-radius: 2px; display: inline-block;
+  }
+  .auth-left-title {
+    font-family: var(--font-display);
+    font-size: 2rem; font-weight: 600;
+    color: #fff; line-height: 1.15; margin-bottom: 1rem;
+  }
+  .auth-left-title em { font-style: italic; color: var(--accent); }
+  .auth-left-desc { font-size: 0.83rem; color: #7fa8cc; line-height: 1.7; }
+
+  .auth-left-bottom { z-index: 1; }
+
+  /* Steps */
+  .auth-steps { display: flex; flex-direction: column; gap: 0.85rem; margin-top: 2rem; }
+  .auth-step {
+    display: flex; align-items: flex-start; gap: 0.85rem;
+  }
+  .auth-step-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700; color: var(--accent);
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .auth-step-text { font-size: 0.78rem; color: #7fa8cc; line-height: 1.5; }
+  .auth-step-text strong { color: #b8d4ee; font-weight: 600; display: block; }
+
+  /* ── RIGHT PANEL ── */
+  .auth-panel-right {
+    background: var(--surface);
+    padding: 2.5rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .auth-form-header { margin-bottom: 1.75rem; }
+  .auth-form-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem; font-weight: 600;
+    color: var(--navy); margin-bottom: 0.35rem;
+  }
+  .auth-form-sub { font-size: 0.83rem; color: var(--text-2); }
+
+  /* ── FORM ── */
+  .auth-form { display: flex; flex-direction: column; gap: 1rem; }
+
+  .auth-field { display: flex; flex-direction: column; gap: 0.35rem; }
+  .auth-label {
+    font-size: 0.75rem; font-weight: 600;
+    color: var(--text-2); letter-spacing: 0.04em;
+  }
+  .auth-input-wrap { position: relative; }
+  .auth-input-icon {
+    position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%);
+    font-size: 0.9rem; pointer-events: none; color: var(--text-3);
+  }
+  .auth-input {
+    width: 100%;
+    padding: 0.7rem 1rem 0.7rem 2.5rem;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+    font-family: var(--font-body);
+    color: var(--text-1); background: var(--surface-2);
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none;
+  }
+  .auth-input:focus {
+    border-color: var(--navy-light);
+    background: var(--surface);
+    box-shadow: 0 0 0 3px rgba(30,64,112,0.10);
+  }
+  .auth-input::placeholder { color: var(--text-3); }
+  .auth-input.is-error { border-color: var(--red); }
+
+  .auth-toggle-pw {
+    position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    font-size: 0.85rem; color: var(--text-3);
+    padding: 0; line-height: 1; transition: color 0.2s;
+  }
+  .auth-toggle-pw:hover { color: var(--text-2); }
+
+  /* Password strength */
+  .pw-strength-wrap { margin-top: 6px; }
+  .pw-strength-bar {
+    height: 4px; border-radius: 2px; background: var(--border);
+    overflow: hidden;
+  }
+  .pw-strength-fill {
+    height: 100%; border-radius: 2px; width: 0%;
+    transition: width 0.3s, background 0.3s;
+  }
+  .pw-strength-label {
+    font-size: 0.7rem; color: var(--text-3); margin-top: 3px;
+  }
+
+  /* Field hint */
+  .auth-hint { font-size: 0.7rem; color: var(--text-3); margin-top: 3px; }
+
+  /* ── SUBMIT ── */
+  .auth-submit {
+    margin-top: 0.25rem; width: 100%; padding: 0.8rem;
+    background: var(--navy); color: #fff;
+    border: none; border-radius: var(--radius-md);
+    font-size: 0.9rem; font-weight: 600;
+    font-family: var(--font-body); cursor: pointer;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 2px 12px rgba(11,31,58,0.22);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .auth-submit:hover {
+    background: var(--navy-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px rgba(11,31,58,0.28);
+  }
+  .auth-submit:active { transform: scale(0.98); }
+
+  /* ── FOOTER LINK ── */
+  .auth-or {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin: 0.5rem 0;
+    font-size: 0.75rem; color: var(--text-3); font-weight: 500;
+  }
+  .auth-or::before, .auth-or::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .auth-foot {
+    text-align: center; margin-top: 1rem;
+    font-size: 0.8rem; color: var(--text-2);
+  }
+  .auth-foot a {
+    color: var(--navy); font-weight: 600;
+    text-decoration: underline; text-underline-offset: 3px;
+    transition: color 0.15s;
+  }
+  .auth-foot a:hover { color: var(--teal); }
+
+  /* ── MESSAGES ── */
+  .auth-messages { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+  .auth-msg {
+    padding: 0.65rem 0.9rem; border-radius: var(--radius-sm);
+    font-size: 0.8rem; font-weight: 500;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .auth-msg-error   { background: var(--red-dim);   color: #7a0f1a; border: 1px solid #e8445a28; }
+  .auth-msg-success { background: var(--green-dim); color: #0f4d2d; border: 1px solid #27ae7528; }
+  .auth-msg-info    { background: #e8f4ff; color: #0a3d6b; border: 1px solid #90c4f028; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .auth-shell { grid-template-columns: 1fr; min-height: auto; }
+    .auth-panel-left { padding: 2rem 1.5rem; }
+    .auth-left-title { font-size: 1.5rem; }
+    .auth-steps { display: none; }
+    .auth-panel-right { padding: 2rem 1.5rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+  <div class="auth-shell">
+
+    <!-- ── LEFT PANEL ── -->
+    <div class="auth-panel-left">
+      <div class="auth-left-top">
+        <div class="auth-left-logo">🗳️</div>
+        <div class="auth-left-eyebrow">West Bengal Assembly</div>
+        <div class="auth-left-title">Join the<br><em>2026</em> Vote</div>
+        <div class="auth-left-desc">
+          Create your voter account to participate in the West Bengal Legislative Assembly Election 2026. Registration is free and takes under a minute.
+        </div>
+      </div>
+      <div class="auth-left-bottom">
+        <div class="auth-steps">
+          <div class="auth-step">
+            <div class="auth-step-num">1</div>
+            <div class="auth-step-text">
+              <strong>Create your account</strong>
+              Choose a unique username and secure password.
+            </div>
+          </div>
+          <div class="auth-step">
+            <div class="auth-step-num">2</div>
+            <div class="auth-step-text">
+              <strong>Log in securely</strong>
+              Access the portal with your registered credentials.
+            </div>
+          </div>
+          <div class="auth-step">
+            <div class="auth-step-num">3</div>
+            <div class="auth-step-text">
+              <strong>Cast your vote</strong>
+              Select your party — your vote is encrypted and final.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT PANEL ── -->
+    <div class="auth-panel-right">
+      <div class="auth-form-header">
+        <div class="auth-form-title">Create Account</div>
+        <div class="auth-form-sub">Fill in the details below to register</div>
+      </div>
+
+      <!-- Flash messages -->
+      {% if messages %}
+        <div class="auth-messages">
+          {% for message in messages %}
+            <div class="auth-msg auth-msg-{{ message.tags }}">
+              {% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✅{% else %}ℹ️{% endif %}
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'register' %}" class="auth-form" autocomplete="off">
+        {% csrf_token %}
+
+        <!-- Username -->
+        <div class="auth-field">
+          <label class="auth-label" for="username">Username</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">👤</span>
+            <input
+              class="auth-input" type="text" id="username" name="username"
+              placeholder="Choose a username" required autocomplete="off"
+              value="{{ request.POST.username|default:'' }}"
+            />
+          </div>
+          <span class="auth-hint">Letters, numbers, and underscores only.</span>
+        </div>
+
+        <!-- Email -->
+        <div class="auth-field">
+          <label class="auth-label" for="email">Email <span style="color:var(--text-3); font-weight:400;">(optional)</span></label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">✉️</span>
+            <input
+              class="auth-input" type="email" id="email" name="email"
+              placeholder="your@email.com" autocomplete="email"
+              value="{{ request.POST.email|default:'' }}"
+            />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="auth-field">
+          <label class="auth-label" for="password1">Password</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">🔒</span>
+            <input
+              class="auth-input" type="password" id="password1" name="password1"
+              placeholder="Create a password (min 4 chars)" required
+              autocomplete="new-password" style="padding-right:2.8rem;"
+              oninput="checkStrength(this.value)"
+            />
+            <button type="button" class="auth-toggle-pw" onclick="togglePw('password1', this)" title="Show/hide">👁️</button>
+          </div>
+          <div class="pw-strength-wrap">
+            <div class="pw-strength-bar">
+              <div class="pw-strength-fill" id="strengthFill"></div>
+            </div>
+            <div class="pw-strength-label" id="strengthLabel">Enter a password</div>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="auth-field">
+          <label class="auth-label" for="password2">Confirm Password</label>
+          <div class="auth-input-wrap">
+            <span class="auth-input-icon">🔒</span>
+            <input
+              class="auth-input" type="password" id="password2" name="password2"
+              placeholder="Repeat your password" required
+              autocomplete="new-password" style="padding-right:2.8rem;"
+              oninput="checkMatch()"
+            />
+            <button type="button" class="auth-toggle-pw" onclick="togglePw('password2', this)" title="Show/hide">👁️</button>
+          </div>
+          <span class="auth-hint" id="matchHint"></span>
+        </div>
+
+        <button type="submit" class="auth-submit">
+          Create Account →
+        </button>
+      </form>
+
+      <div class="auth-or">or</div>
+
+      <div class="auth-foot">
+        Already have an account? <a href="{% url 'login' %}">Sign in</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function togglePw(fieldId, btn) {
+    const input = document.getElementById(fieldId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+  }
+
+  function checkStrength(val) {
+    const fill  = document.getElementById('strengthFill');
+    const label = document.getElementById('strengthLabel');
+    if (!val) {
+      fill.style.width = '0%'; label.textContent = 'Enter a password';
+      fill.style.background = 'var(--border)'; return;
+    }
+    let score = 0;
+    if (val.length >= 4)  score++;
+    if (val.length >= 8)  score++;
+    if (/[A-Z]/.test(val)) score++;
+    if (/[0-9]/.test(val)) score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    const levels = [
+      { w: '20%', bg: '#e8445a', text: 'Too weak' },
+      { w: '40%', bg: '#e8445a', text: 'Weak' },
+      { w: '60%', bg: '#f5a623', text: 'Fair' },
+      { w: '80%', bg: '#00b8a9', text: 'Good' },
+      { w: '100%', bg: '#27ae75', text: 'Strong' },
+    ];
+    const lvl = levels[Math.min(score - 1, 4)] || levels[0];
+    fill.style.width = lvl.w;
+    fill.style.background = lvl.bg;
+    label.textContent = lvl.text;
+    label.style.color = lvl.bg;
+  }
+
+  function checkMatch() {
+    const p1 = document.getElementById('password1').value;
+    const p2 = document.getElementById('password2').value;
+    const hint = document.getElementById('matchHint');
+    const input2 = document.getElementById('password2');
+    if (!p2) { hint.textContent = ''; return; }
+    if (p1 === p2) {
+      hint.textContent = '✓ Passwords match';
+      hint.style.color = 'var(--green)';
+      input2.style.borderColor = 'var(--green)';
+    } else {
+      hint.textContent = '✗ Passwords do not match';
+      hint.style.color = 'var(--red)';
+      input2.style.borderColor = 'var(--red)';
+    }
+  }
+</script>
+{% endblock %}
