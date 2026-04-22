@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from .models import Party, Vote
-
+from honeypot.decorators import check_honeypot
 
 def dashboard(request):
     total_votes = Vote.objects.count()
