@@ -289,6 +289,8 @@
       <form method="POST" action="{% url 'register' %}" class="auth-form" autocomplete="off">
         {% csrf_token %}
 
+        {% load honeypot %}
+        {% render_honeypot_field %}
         <!-- Username -->
         <div class="auth-field">
           <label class="auth-label" for="username">Username</label>

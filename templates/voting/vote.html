@@ -153,6 +153,8 @@
 
     <form method="POST" action="{% url 'vote' %}">
       {% csrf_token %}
+      {% load honeypot %}
+      {% render_honeypot_field %}
 
       <div class="party-options">
         {% for party in parties %}

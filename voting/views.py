@@ -27,6 +27,7 @@ def dashboard(request):
 
 
 @login_required
+@check_honeypot
 def vote(request):
     try:
         existing = Vote.objects.get(user=request.user)

@@ -3,9 +3,10 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.contrib import messages
+from honeypot.decorators import check_honeypot
 
 
-
+@check_honeypot
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')

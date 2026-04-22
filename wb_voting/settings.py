@@ -68,8 +68,12 @@ INSTALLED_APPS = [
     'cloudinary',
 
     'accounts',
-    'voting'
+    'voting',
+
+    'honeypot'
 ]
+
+HONEYPOT_FIELD_NAME = 'secondary_email'
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
