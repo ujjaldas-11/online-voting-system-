@@ -174,12 +174,11 @@
         <div class="alert-title">Vote successfully recorded</div>
         <div class="alert-sub">You voted for {{ voted_party.name }} — thank you for participating!</div>
       </div>
-      <a href="{% url 'results' %}" class="btn btn-teal btn-sm">📊 View Results</a>
+      <a href="{% url 'results' %}" class="btn btn-teal btn-sm">View Results</a>
     </div>
   {% else %}
     <div class="cta-card" style="border-left:4px solid var(--accent);">
       <div class="cta-body">
-        <div class="cta-icon-wrap" style="background:var(--accent-dim);">🗳️</div>
         <div>
           <div class="cta-title">You haven't voted yet</div>
           <div class="cta-sub">The election is live. Cast your vote securely right now.</div>
@@ -187,29 +186,28 @@
       </div>
       <div class="cta-actions">
         <a href="{% url 'vote' %}" class="btn btn-accent btn-lg">Vote Now →</a>
-        <a href="{% url 'results' %}" class="btn btn-ghost">📊 Results</a>
+        <a href="{% url 'results' %}" class="btn btn-ghost"> Results</a>
       </div>
     </div>
   {% endif %}
 {% else %}
   <div class="cta-card" style="border-left:4px solid var(--teal);">
     <div class="cta-body">
-      <div class="cta-icon-wrap" style="background:var(--teal-dim);">🔐</div>
       <div>
         <div class="cta-title">Login to cast your vote</div>
         <div class="cta-sub">Register or sign in to participate in the 2026 West Bengal Legislative Assembly Election.</div>
       </div>
     </div>
     <div class="cta-actions">
-      <a href="{% url 'register' %}" class="btn btn-accent">📝 Register</a>
-      <a href="{% url 'login' %}"    class="btn btn-outline">🔑 Login</a>
-      <a href="{% url 'results' %}"  class="btn btn-ghost">📊 Results</a>
+      <a href="{% url 'register' %}" class="btn btn-accent">Register</a>
+      <a href="{% url 'login' %}"    class="btn btn-outline"> Login</a>
+      <a href="{% url 'results' %}"  class="btn btn-ghost"> Results</a>
     </div>
   </div>
 {% endif %}
 
 <div class="divider"></div>
-<div class="section-label">🏛 Parties on the Ballot</div>
+<div class="section-label"> Parties on the Ballot</div>
 <div class="parties-grid">
   {% for party in parties %}
   <div class="party-tile">
