@@ -23,7 +23,7 @@
     <div class="leading-name">{{ leading_party.description }} — {{ leading_party.name }}</div>
     <div class="leading-votes">{{ leading_party.vote_count }} votes</div>
   </div>
-  <div style="margin-left:auto; font-size:2.5rem;">🏆</div>
+  <!-- <div style="margin-left:auto; font-size:2.5rem;">🏆</div> -->
 </div>
 {% endif %}
 
@@ -40,7 +40,7 @@
 
 <div class="card">
   <h3 style="color:var(--deep-blue); margin-bottom:1rem;">
-    📋 Detailed Results
+    Detailed Results
   </h3>
   <table class="results-table">
     <thead>
@@ -63,7 +63,7 @@
           {% endif %}
         </td>
         <td>
-          <span class="bn" style="font-weight:700;">{{ item.party.bengali_name }}</span><br>
+          <span class="bn" style="font-weight:700;">{{ item.party.description }}</span><br>
           <small style="color:#888;">{{ item.party.name }}</small>
         </td>
         <td><strong>{{ item.count }}</strong></td>
@@ -86,7 +86,7 @@
        Total Votes: <strong>{{ total_votes }}</strong>
     </span>
     <a href="{% url 'vote' %}" class="btn btn-primary" style="padding:10px 20px; font-size:0.9rem;">
-      🗳️ <span class="bn">ভোট দিন</span> / Vote
+     Vote
     </a>
   </div>
 </div>

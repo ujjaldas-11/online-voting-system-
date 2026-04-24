@@ -535,14 +535,14 @@
   <nav class="navbar">
     <div class="navbar-inner">
       <a href="{% url 'dashboard' %}" class="navbar-brand">
-        <div class="navbar-logo">🗳️</div>
+        <!-- <div class="navbar-logo">🗳️</div> -->
         <div class="navbar-brand-text">
           <span class="navbar-brand-title">WB E-Vote</span>
           <span class="navbar-brand-sub">Assembly Election 2026</span>
         </div>
       </a>
       <div class="navbar-links">
-        <a href="{% url 'dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">Dashboard</a>
+        <!-- <a href="{% url 'dashboard' %}" class="nav-link {% block nav_dashboard %}{% endblock %}">Dashboard</a> -->
         <a href="{% url 'results' %}"   class="nav-link {% block nav_results %}{% endblock %}">Results</a>
         {% if user.is_authenticated %}
           <div class="nav-user">
